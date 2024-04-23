@@ -15,6 +15,10 @@ const studentModel = new mongoose.Schema({
     select:false,
     maxLength:[15,'Password Should not be exceed more than 15 characters'],
     minLength:[6,'Password Should have atleast 6 characters'],
+    resetPasswordToken:{
+      type:String,
+      default:"0",
+    },
     // match:[]
  },
 },{timestamps:true})
