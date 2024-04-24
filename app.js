@@ -25,7 +25,9 @@ app.use(session({
   secret:process.env.EXPRESS_SESSION_SECRET,
 }))
 app.use(cookieparser());
-
+//express file-upload
+const fileupload = require("express-fileupload");
+app.use(fileupload());
 
 //routes
 app.use('/',require('./routes/indexRoutes.js'));

@@ -1,26 +1,26 @@
 const express = require('express');
-const { homepage, studentsignup, studentsignin, 
-    studentsignout, currentStudent , studentSendmail , studentforgetlink 
-,studentresetpassword} = require('../controllers/indexController');
+const { homepage, studentsignup, studentsignin,
+    studentsignout, currentStudent, studentSendmail, studentavatar,
+    studentforgetlink, studentresetpassword, studentupdate } = require('../controllers/indexController');
 const { isAuthenticated } = require('../middlewares/auth');
 const router = express.Router();
 
 
 //GET
-router.get('/',homepage);
+router.get('/', homepage);
 
 //GET/student/signout 
-router.get('/student/signout',isAuthenticated,studentsignout);
+router.get('/student/signout', isAuthenticated, studentsignout);
 
 
 //POST/student/signup 
-router.post('/student/signup',studentsignup);
+router.post('/student/signup', studentsignup);
 
 //POST/student/signin 
-router.post('/student/signin',studentsignin);
+router.post('/student/signin', studentsignin);
 
 //POST/student
-router.post('/student',isAuthenticated,currentStudent);
+router.post('/student', isAuthenticated, currentStudent);
 
 // POST /student/send-mail
 router.post("/student/sendmail", studentSendmail);
@@ -29,8 +29,13 @@ router.post("/student/sendmail", studentSendmail);
 router.get("/student/forget-link/:id", studentforgetlink);
 
 // POST /student/reset-password/:studentid
-router.post("/student/reset-password/:id", isAuthenticated,studentresetpassword);
+router.post("/student/reset-password/:id", isAuthenticated, studentresetpassword);
 
+// POST /student/update/:studentid
+router.post("/student/update/:id", isAuthenticated, studentupdate);
+
+// POST /student/avatar/:studentid
+router.post("/student/avatar/:id", isAuthenticated, studentavatar);
 
 
 

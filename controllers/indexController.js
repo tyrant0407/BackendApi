@@ -3,6 +3,8 @@ const Student = require("../models/studentModel");
 const ErrorHandler = require("../utils/errorHandler");
 const { sendtoken } = require('../utils/JwtSendToken');
 const { SendMail } = require("../utils/Nodemailer");
+const imagekit = require('../utils/ImageKit').initImageKit()
+const path = require('path')
 
 
 exports.homepage = catchAsyncErrors(async (req, res, next) => {
@@ -92,8 +94,34 @@ exports.studentresetpassword = catchAsyncErrors(async (req, res, next) => {
     student.resetPasswordToken = "0";
     student.password = req.body.password;
     await student.save();
-    sendtoken(student,201,res.json({ message: "Password has been Successfully Reset" })
-)
+    sendtoken(student, 201, res.json({ message: "Password has been Successfully Reset" })
+    )
 
 });
+exports.studentupdate = catchAsyncErrors(async (req, res, next) => {
+    await Student.findByIdAndUpdate(req.params.id).exec();
+    res.status(200).json({
+        success: true,
+        message: "Student Details Updated Successfully!"
+    })
+});
 
+exports.studentavatar = catchAsyncErrors(async (req, res, next) => {
+    const student = await Student.findById(req.params.id).exec();
+    const file = req.files.avatar;
+    const ModifiedFilename = `resumebiulder-${Date.now()}${path.extname(file.name)}`;
+
+    if(student.avatar.fileId !== ""){
+        await imagekit.deleteFile(student.avatar.fileId)
+    }//agar field mein phele se koi id hai toh ye use hoga
+
+
+    const {fileId,url} = await imagekit.upload({
+        file: file.data,
+        fileName:  ModifiedFilename,
+      });
+     student.avatar ={fileId,url};
+     await student.save();
+     res.status(200).json({ success:true ,message: "Profile avatar updated" })
+
+});
