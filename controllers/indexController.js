@@ -40,70 +40,58 @@ exports.studentsignout = catchAsyncErrors(async (req, res, next) => {
 
 exports.studentSendmail = catchAsyncErrors(async (req, res, next) => {
     const student = await Student.findOne({ email: req.body.email }).exec();
-
+  
     if (!student)
-        return next(
-            new ErrorHandler(
-                `User not registered with this email address: ${req.body.email}`,
-                404
-            )
-        );
-
-    const url = `${req.protocol}://${req.get("host")}/student/forget-link/${student._id
-        }`;
-
+      return next(
+        new ErrorHandler(
+          `User not registered with this email address: ${req.body.email}`,
+          404
+        )
+      );
+  
+    const url = `${req.protocol}://${req.get("host")}/student/forget-link/${
+      student._id
+    }`;
+  
     SendMail(req, res, next, url);
-    student.resetPasswordToken = "1";
-    await student.save();
-    res.json({ student, url })
-
-});
-
-
-exports.studentforgetlink = catchAsyncErrors(async (req, res, next) => {
+    student.resetPasswordToken = 1;
+    student.save();
+  });
+  
+  exports.studentForgetLink = catchAsyncErrors(async (req, res, next) => {
     const student = await Student.findById(req.params.id).exec();
-
-    if (!student) {
-        return next(
-            new ErrorHandler(
-                `User not registered with this email address: ${req.body.email}`,
-                404
-            )
-        );
-    }
-    if (student.resetPasswordToken == "1") {
-        student.resetPasswordToken = "0";
-        student.password = req.body.password;
+  
+    if (!student)
+      return next(
+        new ErrorHandler(
+          `User not registered with this email address: ${req.body.email}`,
+          404
+        )
+      );
+  
+    if (student.resetPasswordToken == 1) {
+      student.resetPasswordToken = 0;
+      student.password = req.body.password;
+      await student.save();
     } else {
-        return next(
-            new ErrorHandler(
-                "Invalid Reset Password Link! please use valid link ",
-                500
-            )
-        );
+      return next(new ErrorHandler(`Invalid password reset link`, 500));
     }
-    await student.save();
-    res.status(200).json({ message: "Password has been Successfully Changed" })
-
-
-});
-
-exports.studentresetpassword = catchAsyncErrors(async (req, res, next) => {
-    const student = await Student.findById(req.id).exec();
-
-    student.resetPasswordToken = "0";
+  
+    res.status(200).json({ message: "password reset successfully" });
+  });
+  
+  exports.studentResetPassword = catchAsyncErrors(async (req, res, next) => {
+    const student = await Student.findById(req.params.id).exec();
     student.password = req.body.password;
     await student.save();
-    sendtoken(student, 201, res.json({ message: "Password has been Successfully Reset" })
-    )
-
-});
+    sendtoken(student, 201, res);
+  });
+  
 exports.studentupdate = catchAsyncErrors(async (req, res, next) => {
-    await Student.findByIdAndUpdate(req.params.id).exec();
-    res.status(200).json({
-        success: true,
-        message: "Student Details Updated Successfully!"
-    })
+    await Student.findByIdAndUpdate(req.params.id, req.body).exec();
+  res
+    .status(200)
+    .json({ success: true, message: "student updated successfully" });
 });
 
 exports.studentavatar = catchAsyncErrors(async (req, res, next) => {

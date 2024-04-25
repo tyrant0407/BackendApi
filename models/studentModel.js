@@ -53,14 +53,25 @@ const studentModel = new mongoose.Schema({
    password: {
       type: String,
       select: false,
+      required: [true, "Password required"],
       maxLength: [15, 'Password Should not be exceed more than 15 characters'],
       minLength: [6, 'Password Should have atleast 6 characters'],
-      resetPasswordToken: {
-         type: String,
-         default: "0",
-      },
       // match:[]
    },
+   resetPasswordToken: {
+      type:Number,
+      default: 0,
+    },
+   resume:{
+      education:[],
+      jobs:[],
+      internships:[],
+      responsibilities:[],
+      courses:[],
+      projects:[],
+      skills:[],
+      accomplishments:[],
+    },
 }, { timestamps: true })
 
 studentModel.pre("save", function () {
