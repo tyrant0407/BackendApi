@@ -3,8 +3,10 @@ const Employe = require("../models/employeModel");
 const ErrorHandler = require("../utils/errorHandler");
 const { sendtoken } = require('../utils/JwtSendToken');
 const { SendMail } = require("../utils/Nodemailer");
-const imagekit = require('../utils/ImageKit').initImageKit()
-const path = require('path')
+const imagekit = require('../utils/ImageKit').initImageKit();
+const Internship = require('../models/internshipModel');
+const jobModel = require('../models/jobModel')
+const path = require('path');
 
 
 exports.homepage = catchAsyncErrors(async (req, res, next) => {
@@ -122,7 +124,7 @@ exports.employeeOrganisationlogo = catchAsyncErrors(async (req, res, next) => {
   
   exports.createInternship = catchAsyncErrors(async (req, res, next) => {
     const employe = await Employe.findById(req.id);
-    const newInternship = await new internshipModel({...req.body,employe:employe._id}).save();
+    const newInternship = await new Internship({...req.body,employe:employe._id}).save();
     employe.internships.push(newInternship._id);
     await employe.save();
     res.status(201).json({ employe,newInternship });
@@ -134,7 +136,7 @@ exports.employeeOrganisationlogo = catchAsyncErrors(async (req, res, next) => {
   });
   
   exports.readSingleInternship = catchAsyncErrors(async (req, res, next) => {
-    const internship = await internshipModel.findById(req.params.id);
+    const internship = await Internship.findById(req.params.id);
     res.status(200).json({ internship });
   });
   
