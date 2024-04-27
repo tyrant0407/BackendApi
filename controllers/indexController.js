@@ -1,5 +1,7 @@
 const { catchAsyncErrors } = require("../middlewares/catchAsyncErrors");
 const Student = require("../models/studentModel");
+const Job = require("../models/jobModel");
+const Internship = require("../models/internshipModel")
 const ErrorHandler = require("../utils/errorHandler");
 const { sendtoken } = require('../utils/JwtSendToken');
 const { SendMail } = require("../utils/Nodemailer");
@@ -112,4 +114,25 @@ exports.studentavatar = catchAsyncErrors(async (req, res, next) => {
      await student.save();
      res.status(200).json({ success:true ,message: "Profile avatar updated" })
 
+});
+
+
+exports.studentApplyInternship = catchAsyncErrors(async (req, res, next) => {
+  const student = await Student.findById(req.id);
+  const internship = await Internship.findById(req.params.id);
+  student.internships.push(internship._id);
+  internship.students.push(student._id);
+  await student.save();
+  await internship.save();
+  res.json({ student });
+});
+
+exports.studentApplyJob = catchAsyncErrors(async (req, res, next) => {
+  const student = await Student.findById(req.id);
+  const job = await Job.findById(req.params.id);
+  student.jobs.push(job._id);
+  job.students.push(student._id);
+  await student.save();
+  await job.save();
+  res.json({ student });
 });
